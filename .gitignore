@@ -1,0 +1,16 @@
+# Backend
+node_modules/
+.env
+package-lock.json
+logs
+*.log
+
+# Frontend build
+client/node_modules/
+client/dist/
+client/.vite/
+/client/build
+/client/.env
+
+# System
+.DS_Store
