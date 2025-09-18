@@ -22,19 +22,29 @@ connectDB();
 // -----------------
 const app = express();
 
-// -----------------
-// CORS Setup
-// -----------------
-const allowedOrigins = ["http://localhost:5173"]; // local frontend only
+const allowedOrigins = [
+  "http://localhost:5173", // Local frontend
+  "https://sigma-lifts.onrender.com", // Deployed frontend (update if different)
+];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = "CORS policy does not allow access from this origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// app.options("/*", cors());
 
 // -----------------
 // Middlewares
@@ -47,6 +57,9 @@ app.use(morgan("dev"));
 // -----------------
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/enquiry", enquiryRoutes);
+
+// Debug check
+console.log("✅ Enquiry routes loaded at /api/v1/enquiry");
 
 // -----------------
 // Test route
