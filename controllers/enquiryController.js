@@ -1,8 +1,9 @@
-// controllers/enquiryController.js
-import nodemailer from "nodemailer";
 import enquiryModel from "../models/enquiryModel.js";
+import sgMail from "@sendgrid/mail";
 
-// ✅ Save enquiry & send email
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// ✅ Save enquiry & send email via SendGrid
 export const createEnquiry = async (req, res) => {
   try {
     const { name, email, phone, message } = req.body;
@@ -12,31 +13,25 @@ export const createEnquiry = async (req, res) => {
     await newEnquiry.save();
 
     // Send email to admin
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "goleasmita876@gmail.com",
-        pass: "jrtfaogcgwxthklu", // 👈 use App Password, NOT Gmail password
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"Sigma Lifts Pvt. Ltd" <goleasmita876@gmail.com>`,
-      to: "goleasmita876@gmail.com",
+    const msg = {
+      to: "goleasmita876@gmail.com", // admin email
+      from: "goleasmita876@gmail.com", // verified sender in SendGrid
       replyTo: email,
       subject: "New Enquiry Received",
       html: `
-    <h3>New Enquiry</h3>
-    <p><strong>Name:</strong> ${name}</p>
-    <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Phone:</strong> ${phone}</p>
-    <p><strong>Message:</strong> ${message}</p>
-  `,
-    });
+        <h3>New Enquiry</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Message:</strong> ${message}</p>
+      `,
+    };
+
+    await sgMail.send(msg);
 
     res.json({ success: true, message: "Enquiry submitted successfully!" });
   } catch (err) {
-    console.error("Error creating enquiry:", err.message, err);
+    console.error("Error creating enquiry:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -52,8 +47,7 @@ export const listEnquiries = async (req, res) => {
   }
 };
 
-//delete
-
+// Delete enquiry
 export const deleteEnquiry = async (req, res) => {
   try {
     const deleted = await enquiryModel.findByIdAndDelete(req.params.id);
