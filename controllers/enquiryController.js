@@ -21,7 +21,7 @@ export const createEnquiry = async (req, res) => {
     // ======================
     const adminMsg = {
       to: "goleasmita876@gmail.com", // Admin email
-      from: "support@sigma-lifts.com", // Use verified domain email
+      from: "goleasmita876@gmail.com", // Use verified domain email
       replyTo: email,
       subject: `New Enquiry from ${name} | Sigma Lifts`,
       text: `You have received a new enquiry.\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`,
@@ -45,7 +45,7 @@ export const createEnquiry = async (req, res) => {
     // ======================
     const userMsg = {
       to: email,
-      from: "support@sigma-lifts.com", // Verified domain email
+      from: "goleasmita876@gmail.com", // Verified domain email
       subject: `Thank You for Your Enquiry, ${name} | Sigma Lifts`,
       text: `Hello ${name},\n\nThank you for contacting Sigma Lifts. We have received your enquiry:\n\n${message}\n\nOur team will get back to you shortly.\n\nBest regards,\nSigma Lifts Team`,
       html: `
