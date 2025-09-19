@@ -6,6 +6,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 import enquiryRoutes from "./routes/enquiryRoute.js";
 import cors from "cors";
+import sgMail from "@sendgrid/mail";
 
 // -----------------
 // Config environment
@@ -52,6 +53,23 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 
+// ✅ Set SendGrid API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+app.get("/test-email", async (req, res) => {
+  try {
+    await sgMail.send({
+      to: "goleasmita876@gmail.com",
+      from: "goleasmita876@gmail.com",
+      subject: "Test Email",
+      text: "This is a test email from Render",
+    });
+    res.send("Email sent!");
+  } catch (err) {
+    console.error(err.response?.body || err.message);
+    res.status(500).send("Email failed");
+  }
+});
 // -----------------
 // API Routes
 // -----------------

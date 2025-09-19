@@ -16,12 +16,14 @@ export const createEnquiry = async (req, res) => {
     const newEnquiry = new enquiryModel({ name, email, phone, message });
     await newEnquiry.save();
 
-    // Send email via SendGrid
-    const msg = {
+    // ======================
+    // 1) Email to Admin
+    // ======================
+    const adminMsg = {
       to: "goleasmita876@gmail.com", // ✅ Admin email
-      from: "goleasmita876@gmail.com", // ✅ Verified sender in SendGrid
-      replyTo: email, // Reply goes to user who submitted
-      subject: "New Enquiry Received",
+      from: "goleasmita876@gmail.com", // ✅ Verified sender
+      replyTo: email, // Reply goes to user
+      subject: "📥 New Enquiry Received",
       html: `
         <h3>New Enquiry</h3>
         <p><strong>Name:</strong> ${name}</p>
@@ -31,17 +33,45 @@ export const createEnquiry = async (req, res) => {
       `,
     };
 
+    // ======================
+    // 2) Email to User
+    // ======================
+    const userMsg = {
+      to: email, // ✅ Send to user
+      from: "goleasmita876@gmail.com", // ✅ Verified sender
+      subject: "✅ We received your enquiry",
+      html: `
+        <h3>Hello ${name},</h3>
+        <p>Thank you for contacting <strong>Sigma Lifts</strong>. We have received your enquiry:</p>
+        <blockquote>${message}</blockquote>
+        <p>Our team will get back to you shortly.</p>
+        <br>
+        <p>Best regards,</p>
+        <p><strong>Sigma Lifts Team</strong></p>
+      `,
+    };
+
+    // Send both emails
     try {
-      await sgMail.send(msg);
-    } catch (err) {
-      console.error("SendGrid error:", err.response?.body || err.message);
-      throw new Error("Failed to send email via SendGrid");
+      await sgMail.send(adminMsg);
+      await sgMail.send(userMsg);
+      console.log("✅ Emails sent to admin and user");
+    } catch (emailErr) {
+      console.error(
+        "❌ SendGrid error:",
+        emailErr.response?.body || emailErr.message
+      );
     }
 
+    console.log("✅ Emails sent to admin and user");
+
     // ✅ Respond back to frontend
-    res.json({ success: true, message: "Enquiry submitted successfully!" });
+    res.json({ success: true, message: "Enquiry submitted & emails sent!" });
   } catch (err) {
-    console.error("Error creating enquiry:", err.response?.body || err.message);
+    console.error(
+      "❌ Error creating enquiry:",
+      err.response?.body || err.message
+    );
     res.status(500).json({
       success: false,
       message: "Failed to submit enquiry. Check server logs.",
@@ -55,12 +85,12 @@ export const listEnquiries = async (req, res) => {
     const enquiries = await enquiryModel.find().sort({ createdAt: -1 });
     res.json(enquiries);
   } catch (err) {
-    console.error("Error fetching enquiries:", err);
+    console.error("❌ Error fetching enquiries:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// Delete enquiry
+// ✅ Delete enquiry
 export const deleteEnquiry = async (req, res) => {
   try {
     const deleted = await enquiryModel.findByIdAndDelete(req.params.id);
@@ -69,7 +99,7 @@ export const deleteEnquiry = async (req, res) => {
     }
     res.json({ message: "Enquiry deleted successfully" });
   } catch (err) {
-    console.error("Error deleting enquiry:", err);
+    console.error("❌ Error deleting enquiry:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
