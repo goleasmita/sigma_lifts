@@ -20,34 +20,46 @@ export const createEnquiry = async (req, res) => {
     // 1) Email to Admin
     // ======================
     const adminMsg = {
-      to: "goleasmita876@gmail.com", // ✅ Admin email
-      from: "goleasmita876@gmail.com", // ✅ Verified sender
-      replyTo: email, // Reply goes to user
-      subject: "📥 New Enquiry Received",
+      to: "goleasmita876@gmail.com", // Admin email
+      from: "support@sigma-lifts.com", // Use verified domain email
+      replyTo: email,
+      subject: `New Enquiry from ${name} | Sigma Lifts`,
+      text: `You have received a new enquiry.\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`,
       html: `
-        <h3>New Enquiry</h3>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Message:</strong> ${message}</p>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #2E86C1;">New Enquiry Received</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          <p><strong>Message:</strong></p>
+          <div style="padding: 10px; background: #f4f4f4; border-left: 3px solid #2E86C1;">
+            ${message}
+          </div>
+          <hr>
+          <p>Check the admin panel for more details.</p>
+        </div>
       `,
     };
-
     // ======================
     // 2) Email to User
     // ======================
     const userMsg = {
-      to: email, // ✅ Send to user
-      from: "goleasmita876@gmail.com", // ✅ Verified sender
-      subject: "✅ We received your enquiry",
+      to: email,
+      from: "support@sigma-lifts.com", // Verified domain email
+      subject: `Thank You for Your Enquiry, ${name} | Sigma Lifts`,
+      text: `Hello ${name},\n\nThank you for contacting Sigma Lifts. We have received your enquiry:\n\n${message}\n\nOur team will get back to you shortly.\n\nBest regards,\nSigma Lifts Team`,
       html: `
-        <h3>Hello ${name},</h3>
-        <p>Thank you for contacting <strong>Sigma Lifts</strong>. We have received your enquiry:</p>
-        <blockquote>${message}</blockquote>
-        <p>Our team will get back to you shortly.</p>
-        <br>
-        <p>Best regards,</p>
-        <p><strong>Sigma Lifts Team</strong></p>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #2E86C1;">Hello ${name},</h2>
+          <p>Thank you for reaching out to <strong>Sigma Lifts</strong>. We have successfully received your enquiry:</p>
+          <div style="padding: 10px; background: #f4f4f4; border-left: 3px solid #2E86C1;">
+            ${message}
+          </div>
+          <p>Our team will review your request and get back to you as soon as possible.</p>
+          <br>
+          <p>Best regards,</p>
+          <p><strong>Sigma Lifts Team</strong></p>
+        </div>
       `,
     };
 
