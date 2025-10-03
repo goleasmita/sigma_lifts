@@ -89,11 +89,10 @@ app.get("/api/test", (req, res) => {
 // -----------------
 // Development root route (only in non-production)
 // -----------------
-if (process.env.NODE_ENV !== "production") {
-  app.get("/", (req, res) =>
-    res.send("<h1>API is running in development...</h1>")
-  );
-}
+
+app.get("/", (req, res) =>
+  res.send("<h1>API is running in development...</h1>")
+);
 
 // -----------------
 // Start server
